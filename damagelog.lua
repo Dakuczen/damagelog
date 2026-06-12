@@ -279,13 +279,16 @@ end
 -- ============================================================
 local savedH = cfg.h
 
+local savedW = cfg.w
+
 local function toggleMinimize()
 	minimized = not minimized
 	if minimized then
 		savedH = win:GetHeight() or WINDOW_H
-		win:SetExtent(win:GetWidth() or WINDOW_W, MINIMIZED_H)
+		savedW = win:GetWidth() or WINDOW_W
+		win:SetExtent(200, MINIMIZED_H)
 	else
-		win:SetExtent(win:GetWidth() or WINDOW_W, savedH)
+		win:SetExtent(savedW, savedH)
 	end
 	refreshDisplay()
 	if savePos then savePos() end
