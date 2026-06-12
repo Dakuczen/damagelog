@@ -402,7 +402,37 @@ local function onCombat(unitId, eventType, sourceName, targetName,
 
 	local isMelee  = string.find(eventType, "MELEE_DAMAGE") ~= nil
 	local isSpell  = string.find(eventType, "SPELL_DAMAGE") ~= nil
+	local isHeal   = string.find(eventType, "SPELL_HEALED") ~= nil
 	local missLabel = getMissLabel(eventType, more, more2, more3, more4, more5)
+
+	-- ---- heals ----
+	if isHeal then
+		local ability = trunc(cleanAbility(abilityName), 16)
+		local amount  = math.abs(tonumber(effectType) or 0)
+		if amount < 1 then return end
+		local ts = fmtTime()
+
+		-- I healed someone → their health bar (Outgoing)
+		if sourceName == SELF_NAME then
+			local tgt = trunc((targetName and targetName ~= "") and targetName or "?", 18)
+			pushLog("Out", {
+				text = string.format("%s  %s -> %s:  +%s", ts, ability, tgt, fmtNum(amount)),
+				r = 0.3, g = 0.9, b = 0.4
+			})
+			if activeTab == "Out" then refreshDisplay() end
+		end
+
+		-- someone healed me → my health bar (Incoming)
+		if targetName == SELF_NAME then
+			local src = trunc((sourceName and sourceName ~= "") and sourceName or "?", 18)
+			pushLog("In", {
+				text = string.format("%s  %s (%s):  +%s", ts, src, ability, fmtNum(amount)),
+				r = 0.3, g = 0.9, b = 0.4
+			})
+			if activeTab == "In" then refreshDisplay() end
+		end
+		return
+	end
 
 	if missLabel then
 		local ability = trunc(cleanAbility(abilityName), 16)
