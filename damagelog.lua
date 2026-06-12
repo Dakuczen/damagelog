@@ -437,15 +437,25 @@ local function onCombat(unitId, eventType, sourceName, targetName,
 	local amount   = isSpell
 		and math.abs(tonumber(effectType) or 0)
 		or  math.abs(tonumber(abilityId)  or 0)
-	if amount < 1 then return end
+
+	-- find absorbed value in trailing params
+	local absorbed = 0
+	for _, p in ipairs({ more, more2, more3, more4, more5 }) do
+		local n = tonumber(p)
+		if n and n > 0 then absorbed = math.floor(n); break end
+	end
+
+	-- skip if no damage and nothing absorbed
+	if amount < 1 and absorbed < 1 then return end
 
 	local ts      = fmtTime()
 	local critTag = isCrit and " CRIT!" or ""
+	local absTag  = absorbed > 0 and string.format(" (%s abs)", fmtNum(absorbed)) or ""
 
 	if sourceName == SELF_NAME then
 		local tgt = trunc((targetName and targetName ~= "") and targetName or "?", 18)
 		pushLog("Out", {
-			text = string.format("%s  %s -> %s:  %s%s", ts, ability, tgt, fmtNum(amount), critTag),
+			text = string.format("%s  %s -> %s:  %s%s%s", ts, ability, tgt, fmtNum(amount), absTag, critTag),
 			r = isCrit and 1.0 or 0.95,
 			g = isCrit and 0.85 or 0.75,
 			b = isCrit and 0.0  or 0.2
@@ -456,7 +466,7 @@ local function onCombat(unitId, eventType, sourceName, targetName,
 	if targetName == SELF_NAME then
 		local src = trunc((sourceName and sourceName ~= "") and sourceName or "?", 18)
 		pushLog("In", {
-			text = string.format("%s  %s (%s):  %s%s", ts, src, ability, fmtNum(amount), critTag),
+			text = string.format("%s  %s (%s):  %s%s%s", ts, src, ability, fmtNum(amount), absTag, critTag),
 			r = 1.0,
 			g = isCrit and 0.05 or 0.3,
 			b = isCrit and 0.0  or 0.3
