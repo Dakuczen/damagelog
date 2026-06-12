@@ -412,8 +412,8 @@ local function onCombat(unitId, eventType, sourceName, targetName,
 		if amount < 1 then return end
 		local ts = fmtTime()
 
-		-- I healed someone → their health bar (Outgoing)
-		if sourceName == SELF_NAME then
+		-- I healed someone else → their health bar (Outgoing)
+		if sourceName == SELF_NAME and targetName ~= SELF_NAME then
 			local tgt = trunc((targetName and targetName ~= "") and targetName or "?", 18)
 			pushLog("Out", {
 				text = string.format("%s  %s -> %s:  +%s", ts, ability, tgt, fmtNum(amount)),
