@@ -281,13 +281,20 @@ local savedH = cfg.h
 
 local savedW = cfg.w
 
+local MINI_W = 200
+
 local function toggleMinimize()
 	minimized = not minimized
+	local x, y = win:GetOffset()
 	if minimized then
 		savedH = win:GetHeight() or WINDOW_H
 		savedW = win:GetWidth() or WINDOW_W
-		win:SetExtent(200, MINIMIZED_H)
+		win:RemoveAllAnchors()
+		win:AddAnchor("TOPLEFT", "UIParent", (x or 0) + savedW - MINI_W, y or 0)
+		win:SetExtent(MINI_W, MINIMIZED_H)
 	else
+		win:RemoveAllAnchors()
+		win:AddAnchor("TOPLEFT", "UIParent", (x or 0) - savedW + MINI_W, y or 0)
 		win:SetExtent(savedW, savedH)
 	end
 	refreshDisplay()
