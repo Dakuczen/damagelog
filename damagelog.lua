@@ -321,6 +321,18 @@ scrDnBtn:SetHandler("OnClick", function()
 	refreshDisplay()
 end)
 
+function win:OnWheelUp()
+	scrollOffset = scrollOffset + 3
+	refreshDisplay()
+end
+win:SetHandler("OnWheelUp", win.OnWheelUp)
+
+function win:OnWheelDown()
+	scrollOffset = math.max(0, scrollOffset - 3)
+	refreshDisplay()
+end
+win:SetHandler("OnWheelDown", win.OnWheelDown)
+
 savePos = function()
 	local x, y = win:GetOffset()
 	local sc    = UIParent:GetUIScale() or 1.0
